@@ -28,29 +28,37 @@ $message = "";
 
 // --- 2. LOGIC: ASSIGN, UPDATE, DELETE ---
 if (isset($_POST['dats_action'])) {
-    $data = array(
-        'bus_id'         => intval($_POST['bus_id']),
-        'driver_id'      => intval($_POST['driver_id']),
-        'route_id'       => intval($_POST['route_id']),
-        'start_loc'      => sanitize_text_field($_POST['start_loc']), 
-        'end_loc'        => sanitize_text_field($_POST['end_loc']),   
-        'departure_time' => sanitize_text_field($_POST['departure_time']),
-        'valid_from'     => sanitize_text_field($_POST['valid_from']),
-        'valid_to'       => sanitize_text_field($_POST['valid_to']),
-        'assigned_by'    => $current_user->ID
-    );
-
-    if ($_POST['dats_action'] == 'assign') {
-        $wpdb->insert('dats_assignments', $data);
-        $message = '<div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px;">✅ Mission Assigned.</div>';
-    }
-    if ($_POST['dats_action'] == 'update_assignment') {
-        $wpdb->update('dats_assignments', $data, array('assignment_id' => intval($_POST['assign_id'])));
-        $message = '<div style="background:#cce5ff; color:#004085; padding:15px; border-radius:8px; margin-bottom:20px;">🔄 Schedule Updated.</div>';
-    }
+    
+    // CASE 1: DELETE (Check this first!)
     if ($_POST['dats_action'] == 'delete_assignment') {
         $wpdb->delete('dats_assignments', array('assignment_id' => intval($_POST['assign_id'])));
         $message = '<div style="background:#fff3cd; color:#856404; padding:15px; border-radius:8px; margin-bottom:20px;">🗑️ Assignment Revoked.</div>';
+    }
+    
+    // CASE 2: ASSIGN or UPDATE (Only gather data here)
+    elseif ($_POST['dats_action'] == 'assign' || $_POST['dats_action'] == 'update_assignment') {
+        
+        $data = array(
+            'bus_id'         => intval($_POST['bus_id']),
+            'driver_id'      => intval($_POST['driver_id']),
+            'route_id'       => intval($_POST['route_id']),
+            'start_loc'      => sanitize_text_field($_POST['start_loc']),
+            'end_loc'        => sanitize_text_field($_POST['end_loc']),
+            'departure_time' => sanitize_text_field($_POST['departure_time']),
+            'valid_from'     => sanitize_text_field($_POST['valid_from']),
+            'valid_to'       => sanitize_text_field($_POST['valid_to']),
+            'assigned_by'    => $current_user->ID
+        );
+
+        if ($_POST['dats_action'] == 'assign') {
+            $wpdb->insert('dats_assignments', $data);
+            $message = '<div style="background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin-bottom:20px;">✅ Mission Assigned.</div>';
+        }
+        
+        if ($_POST['dats_action'] == 'update_assignment') {
+            $wpdb->update('dats_assignments', $data, array('assignment_id' => intval($_POST['assign_id'])));
+            $message = '<div style="background:#cce5ff; color:#004085; padding:15px; border-radius:8px; margin-bottom:20px;">🔄 Schedule Updated.</div>';
+        }
     }
 }
 
@@ -62,7 +70,9 @@ if (isset($_GET['edit_assign'])) {
 
 $buses   = $wpdb->get_results("SELECT * FROM dats_buses WHERE status='active'");
 $drivers = $wpdb->get_results("SELECT * FROM dats_drivers");
-$routes  = $wpdb->get_results("SELECT * FROM dats_routes"); 
+
+// FILTER: HIDE 'Campus Return'
+$routes  = $wpdb->get_results("SELECT * FROM dats_routes WHERE route_name NOT LIKE '%Campus Return%'"); 
 
 // --- 4. DATA FETCHING (WITH TIME SORT) ---
 $raw_assignments = $wpdb->get_results("
@@ -246,3 +256,4 @@ function dats_render_row($a, $edit_data) {
     </div>
     <?php
 }
+?>
