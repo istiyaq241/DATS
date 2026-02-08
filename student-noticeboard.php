@@ -6,7 +6,7 @@ global $wpdb;
 // This grabs the "Featured Image" you set in the WordPress Page Editor
 $bg_image = get_the_post_thumbnail_url(); 
 if (!$bg_image) {
-    // Fallback Blue/Cyan Gradient
+    // Fallback Blue/Cyan Gradient if no image is set
     $bg_style = "background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);";
 } else {
     $bg_style = "background-image: url('" . esc_url($bg_image) . "'); background-size: cover; background-position: center;";
@@ -21,21 +21,63 @@ if (!$bg_image) {
     <meta http-equiv="refresh" content="60"> 
     <title>Student Transport Board</title>
 </head>
-<body style="background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif;">
+<body style="background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; margin: 0;">
 
 <style>
-    /* --- FIX: HIDE DEFAULT WORDPRESS THEME ELEMENTS --- */
-    /* This stops the image and title from appearing twice */
-    .entry-title, .page-title, h1.wp-block-post-title,
-    .post-thumbnail, .wp-block-post-featured-image, .featured-image { 
-        display: none !important; 
+    /* Menu Button */
+    .dats-menu-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        background: #2c3e50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
+    .dats-sidebar {
+        height: 100%; width: 0; position: fixed; z-index: 1001;
+        top: 0; left: 0; background-color: #2c3e50;
+        overflow-x: hidden; transition: 0.3s; padding-top: 60px;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.3);
+    }
+    .dats-sidebar a {
+        padding: 15px 30px; text-decoration: none; font-size: 1.1rem;
+        color: #ecf0f1; display: block; transition: 0.2s;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .dats-sidebar a:hover { background-color: #34495e; color: #27ae60; padding-left: 40px; }
+    .dats-sidebar .closebtn { position: absolute; top: 10px; right: 20px; font-size: 2rem; border-bottom: none; }
+</style>
+
+<button class="dats-menu-btn" onclick="toggleNav()">☰ MENU</button>
+<div id="datsSidebar" class="dats-sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">×</a>
+    <a href="http://localhost/dats/">🏠 Home</a>
+    <a href="http://localhost/dats/student-board/">🚍 Student Board</a>
+    <a href="http://localhost/dats/fleet-management-console/">🔐 Admin Console</a>
+</div>
+
+<script>
+    function toggleNav() {
+        var sidebar = document.getElementById("datsSidebar");
+        sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
+    }
+</script>
+<style>
+    /* HIDE DEFAULT WORDPRESS THEME ELEMENTS */
+    .entry-title, .page-title, h1.wp-block-post-title,
+    .post-thumbnail, .wp-block-post-featured-image, header, footer { display: none !important; }
     
-    /* --- STUDENT BANNER --- */
+    /* BANNER STYLE */
     .dats-student-banner {
         <?php echo $bg_style; ?>
         height: 250px;
-        border-radius: 0 0 20px 20px; /* Rounded bottom */
+        border-radius: 0 0 20px 20px;
         position: relative;
         display: flex;
         flex-direction: column;
@@ -45,16 +87,12 @@ if (!$bg_image) {
         margin-bottom: 40px;
         overflow: hidden;
     }
-    
-    /* Overlay for text readability */
     .dats-student-banner::before {
-        content: '';
-        position: absolute;
-        top:0; left:0; right:0; bottom:0;
-        background: rgba(0,0,0,0.3); /* Slight dark tint */
+        content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+        background: rgba(0,0,0,0.3);
     }
 
-    /* GLASS TITLE BOX */
+    /* GLASS TITLE */
     .dats-student-title {
         position: relative;
         background: rgba(255, 255, 255, 0.95);
@@ -66,37 +104,19 @@ if (!$bg_image) {
         z-index: 10;
         border: 1px solid rgba(255,255,255,0.5);
     }
-
     .dats-student-title h1 {
-        margin: 0;
-        color: #2c3e50;
-        font-family: 'Segoe UI', sans-serif;
-        font-weight: 900;
-        font-size: 2.2rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
+        margin: 0; color: #2c3e50; font-weight: 900; font-size: 2.2rem;
+        text-transform: uppercase; letter-spacing: 2px;
     }
-    
-    /* SYSTEM STATUS SUBTITLE */
     .dats-subtitle {
-        color: #27ae60;
-        font-weight: bold;
-        font-size: 0.9rem;
-        margin-top: 5px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        color: #27ae60; font-weight: bold; font-size: 0.9rem; margin-top: 5px;
+        text-transform: uppercase; letter-spacing: 1px;
     }
-
-    /* PULSE ANIMATION DOT */
+    /* PULSE DOT */
     .dats-dot {
-        height: 10px; width: 10px;
-        background-color: #27ae60;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 5px;
-        animation: pulse 1.5s infinite;
+        height: 10px; width: 10px; background-color: #27ae60; border-radius: 50%;
+        display: inline-block; margin-right: 5px; animation: pulse 1.5s infinite;
     }
-    
     @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 </style>
 
@@ -110,8 +130,7 @@ if (!$bg_image) {
 <div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
 
     <?php
-    // --- 2. FETCH DATA (FILTERED FOR LIVE STATUS) ---
-    // Only fetch buses where time is > CURTIME()
+    // --- 2. FETCH DATA (LOGIC) ---
     $query = "
         SELECT 
             a.departure_time, a.start_loc, a.end_loc,
@@ -129,7 +148,6 @@ if (!$bg_image) {
 
     // --- 3. GROUP BY ROUTE & DIRECTION ---
     $schedule = [];
-
     if ($results) {
         foreach ($results as $row) {
             $dest = strtolower($row->end_loc);
@@ -142,7 +160,7 @@ if (!$bg_image) {
         }
     }
 
-    // --- 4. HELPER FUNCTION (WITH SAFETY CHECK) ---
+    // --- 4. RENDER FUNCTION ---
     if (!function_exists('dats_render_bus_list')) {
         function dats_render_bus_list($buses, $colorTheme) {
             if (empty($buses)) {
@@ -162,24 +180,22 @@ if (!$bg_image) {
         }
     }
 
-    // --- 5. DISPLAY THE BOARD ---
+    // --- 5. DISPLAY BOARD ---
     if (empty($schedule)) {
         echo '<div style="text-align: center; padding: 50px; background: white; border-radius: 8px; color: #777;"><h3>🚫 No active buses right now.</h3><p>Please check back later.</p></div>';
     } else {
         foreach ($schedule as $route_name => $directions) {
             echo '<div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 30px;">';
-            
-            echo '<div style="background: #34495e; color: white; padding: 15px 20px; font-size: 1.2rem; font-weight: bold; letter-spacing: 0.5px;">';
-            echo '🚌 '.esc_html($route_name);
-            echo '</div>';
-            
+            echo '<div style="background: #34495e; color: white; padding: 15px 20px; font-size: 1.2rem; font-weight: bold; letter-spacing: 0.5px;">🚌 '.esc_html($route_name).'</div>';
             echo '<div style="display: flex; flex-wrap: wrap;">';
             
+            // Inbound Column
             echo '<div style="flex: 1; min-width: 300px; border-right: 1px solid #eee;">';
             echo '<div style="background: #e3f2fd; color: #0d47a1; padding: 10px; font-weight: bold; text-align: center; border-bottom: 1px solid #bbdefb;">⬇️ To Campus (Inbound)</div>';
             echo dats_render_bus_list($directions['inbound'] ?? [], '#2196F3');
             echo '</div>';
             
+            // Outbound Column
             echo '<div style="flex: 1; min-width: 300px;">';
             echo '<div style="background: #e8f5e9; color: #1b5e20; padding: 10px; font-weight: bold; text-align: center; border-bottom: 1px solid #c8e6c9;">⬆️ From Campus (Outbound)</div>';
             echo dats_render_bus_list($directions['outbound'] ?? [], '#4CAF50');

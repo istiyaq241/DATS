@@ -1,7 +1,6 @@
 /* Template Name: DATS Admin Console */
 
 global $wpdb;
-$wpdb->show_errors(); 
 
 // --- 1. DESIGN LOGIC: GET BACKGROUND IMAGE ---
 // This grabs the "Featured Image" you set in the WordPress Page Editor
@@ -11,11 +10,101 @@ $bg_style = $bg_image
     : "background: #2c3e50;"; // Fallback dark color if no image
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet Command // Nexus</title>
+</head>
+<body style="background-color: #f4f6f9; font-family: 'Segoe UI', sans-serif; margin: 0;">
+
+<style>
+    /* Menu Button */
+    .dats-menu-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000;
+        background: #2c3e50;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1.2rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    
+    /* Sidebar Container */
+    .dats-sidebar {
+        height: 100%;
+        width: 0;
+        position: fixed;
+        z-index: 1001;
+        top: 0;
+        left: 0;
+        background-color: #2c3e50;
+        overflow-x: hidden;
+        transition: 0.3s;
+        padding-top: 60px;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.3);
+    }
+
+    /* Sidebar Links */
+    .dats-sidebar a {
+        padding: 15px 30px;
+        text-decoration: none;
+        font-size: 1.1rem;
+        color: #ecf0f1;
+        display: block;
+        transition: 0.2s;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .dats-sidebar a:hover {
+        background-color: #34495e;
+        color: #00d2ff; /* Cyan for Admin */
+        padding-left: 40px; /* Slide effect */
+    }
+
+    /* Close Button */
+    .dats-sidebar .closebtn {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 2rem;
+        margin-left: 50px;
+        border-bottom: none;
+    }
+</style>
+
+<button class="dats-menu-btn" onclick="toggleNav()">☰ MENU</button>
+
+<div id="datsSidebar" class="dats-sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">×</a>
+    
+    <a href="http://localhost/dats/">🏠 Home</a>
+    <a href="http://localhost/dats/bus-schedule/">🚍 Student Board</a>
+    <a href="http://localhost/dats/fleet-management-console/">🔐 Admin Console</a>
+</div>
+
+<script>
+    function toggleNav() {
+        var sidebar = document.getElementById("datsSidebar");
+        if (sidebar.style.width === "250px") {
+            sidebar.style.width = "0";
+        } else {
+            sidebar.style.width = "250px";
+        }
+    }
+</script>
 <style>
     /* --- FIX: HIDE DEFAULT THEME ELEMENTS --- */
-    /* This forces the theme's default title and featured image to disappear */
+    /* This forces the theme's default Header, Footer, and Titles to disappear */
     .entry-title, .page-title, h1.wp-block-post-title, 
-    .post-thumbnail, .wp-block-post-featured-image, .featured-image { 
+    .post-thumbnail, .wp-block-post-featured-image, .featured-image, 
+    header, footer, .wp-site-blocks > header, .wp-site-blocks > footer { 
         display: none !important; 
     }
 
@@ -32,6 +121,7 @@ $bg_style = $bg_image
         padding: 30px;
         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         overflow: hidden;
+        margin-top: 60px; /* Space for menu button */
     }
 
     /* Dark Gradient Overlay for text readability */
@@ -101,7 +191,7 @@ $bg_style = $bg_image
 // --- 2. SECURITY & FRONTEND LOGIN ---
 if (!is_user_logged_in()) {
     ?>
-    <div style="font-family: 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 600px; display: flex; align-items: center; justify-content: center;">
+    <div style="font-family: 'Segoe UI', sans-serif; min-height: 600px; display: flex; align-items: center; justify-content: center;">
         <div style="background: white; width: 100%; max-width: 400px; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center;">
             <div style="font-size: 3rem; margin-bottom: 10px;">🚍</div>
             <h2 style="color: #2c3e50; margin: 0 0 5px 0;">Fleet Command</h2>
@@ -436,3 +526,6 @@ if (!function_exists('dats_render_row')) {
         <?php
     }
 }
+?>
+</body>
+</html>
